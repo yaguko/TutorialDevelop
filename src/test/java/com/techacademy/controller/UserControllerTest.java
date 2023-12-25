@@ -60,4 +60,31 @@ class UserControllerTest {
         assertEquals(user.getId(), 1);
         assertEquals(user.getName(), "キラメキ太郎");
     }
-}
+
+    //課題追加
+
+    @Test
+    @DisplayName("User更新画面")
+    @WithMockUser
+    void testGetList() throws Exception {
+        // HTTPリクエストに対するレスポンスの検証
+        MvcResult result = mockMvc.perform(get("/user/update/1/")) // URLにアクセス
+            .andExpect(status().isOk()) // HTTPステータスが200OK
+            .andExpect(model().attributeExists("userlist")) // Modelにuserlistが含まれていること
+            .andExpect(model().hasNoErrors()) // Modelにエラーが無いこと
+            .andExpect(view().name("user/list")) // viewの確認
+            .andReturn(); // 内容の取得
+
+        // userlistの検証
+        // Modelからuserlistを取り出す
+        User user = (User)result.getModelAndView().getModel().get("userlist");
+        assertEquals(user.getId(), 1);
+        assertEquals(user.getName(), "キラメキ太郎");
+        assertEquals(user.getId(), 2);
+        assertEquals(user.getName(), "キラメキ次郎");
+        assertEquals(user.getId(), 3);
+        assertEquals(user.getName(), "キラメキ花子");
+    }
+
+
+ }
