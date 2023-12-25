@@ -45,7 +45,7 @@ public class UserController {
     /** User登録処理 */
     @PostMapping("/register")
     public String postRegister(@Validated User user, BindingResult res, Model model) {
-        if(res.hasErrors()) {
+        if (res.hasErrors()) {
             // エラーあり
             return getRegister(user);
         }
@@ -56,30 +56,47 @@ public class UserController {
     }
     // ----- 変更ここまで -----
 
+    // ----- 課題変更②ここから -----
+
     /** User更新画面を表示 */
     @GetMapping("/update/{id}/")
     public String getUser(@PathVariable("id") Integer id, Model model) {
-        // Modelに登録
-        model.addAttribute("user", service.getUser(id));
+        // Modelに登録,idがnullか否かをifで分ける
+        if(id == null) {
+        model.addAttribute("user"); //ここはOK?　前画面の情報は継続される
+        }
+        if(id != null) {
+        model.addAttribute("user", service.getUser(id));} //ここはOK?　一覧画面からは遷移してくる
+
         // User更新画面に遷移
         return "user/update";
     }
 
+    // ----- 課題変更①ここから -----
+
     /** User更新処理 */
     @PostMapping("/update/{id}/")
-    public String postUser(User user) {
+    public String postUser(@Validated User user, BindingResult res, Integer id, Model model) { // 引数idを追加
+        if (res.hasErrors()) {
+            // エラーあり
+            id = null; // idにnullを設定
+            return getUser(id, model);
+        }
         // User登録
         service.saveUser(user);
         // 一覧画面にリダイレクト
-        return "redirect:/user/list";
+        return "redirect:/user/list";  //更新→一覧への遷移OK
     }
 
+    // ----- 課題変更①ここまで -----
+
     /** User削除処理 */
-    @PostMapping(path="list", params="deleteRun")
-    public String deleteRun(@RequestParam(name="idck") Set<Integer> idck, Model model) {
+    @PostMapping(path = "list", params = "deleteRun")
+    public String deleteRun(@RequestParam(name = "idck") Set<Integer> idck, Model model) {
         // Userを一括削除
         service.deleteUser(idck);
         // 一覧画面にリダイレクト
         return "redirect:/user/list";
     }
+
 }
